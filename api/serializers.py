@@ -1,11 +1,7 @@
 from rest_framework import serializers
 from api.models import Employees,Tasks
 
-class Employeeserializer(serializers.ModelSerializer):
-    class Meta:
-        model=Employees
-        fields="__all__"
-        read_only_fields=["id"]
+
 
 class TaskSerializer(serializers.ModelSerializer):
     employee=serializers.StringRelatedField()
@@ -13,4 +9,11 @@ class TaskSerializer(serializers.ModelSerializer):
         model=Tasks
         fields="__all__"
         read_only_fields=["id","employee","assigned_date"]
+
+class Employeeserializer(serializers.ModelSerializer):
+    tasks=TaskSerializer(read_only=True,many=True) #to list tasks along with emp list
+    class Meta:
+        model=Employees
+        fields="__all__"
+        read_only_fields=["id"]
 

@@ -11,7 +11,7 @@ from rest_framework import permissions,authentication
 class EmployeeModelViewSetView(viewsets.ModelViewSet):
 
     permission_classes=[permissions.IsAdminUser] #admin have the privilage of adding and editing emp detail
-    authentication_classes=[authentication.BasicAuthentication]
+    authentication_classes=[authentication.TokenAuthentication]
 
     serializer_class=Employeeserializer
     model=Employees
@@ -63,5 +63,34 @@ class EmployeeModelViewSetView(viewsets.ModelViewSet):
         return Response(data=serializer.data)
     
 
-#localhost8000/api/v2/task/{taskid}/update
+#localhost8000/api/v2/task/{taskid}/update--http://127.0.0.1:8000/api/v2/tasks/1/
 # method=put
+class TaskView(viewsets.ViewSet):
+
+    authentication_classes=[authentication.TokenAuthentication]
+    permission_classes=[permissions.IsAuthenticated]
+
+    def update(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        task_object=Tasks.objects.get(id=id)
+        serializer=TaskSerializer(data=request.data,instance=task_object)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data)
+        else:
+            return Response(data=serializer.errors)
+        
+    #url- localhost8000/api/v2/task/{taskid}/ --http://127.0.0.1:8000/api/v2/tasks/1/
+    #method-get 
+          
+    def retrieve(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        qs=Tasks.objects.get(id=id)
+        serializer=TaskSerializer(qs)
+        return Response(data=serializer.data)
+    
+    def destroy(self,request,*args,**kwargs):
+        id=kwargs.get("pk")
+        Tasks.objects.get(id=id).delete()
+        return Response(data={"message":"deleted...."})
+

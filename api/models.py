@@ -10,6 +10,11 @@ class Employees(models.Model):
     age=models.PositiveIntegerField()
     contact=models.CharField(max_length=200,null=True)
 
+    @property
+    def tasks(self): #curent model obj=self
+        qs=Tasks.objects.filter(employee=self)
+        return qs
+        
     def __str__(self):
         
         return self.name
@@ -28,3 +33,4 @@ class Tasks(models.Model):
 
     def _str_(self):
         return self.name
+    
